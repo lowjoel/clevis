@@ -5,12 +5,13 @@ SUMMARY="Unlock a ZFS dataset using the saved Clevis data"
 
 usage() {
 	cat >&2 <<-USAGE_END
-		Usage: clevis zfs unlock [-t] -d DATASET
+		Usage: clevis zfs unlock [-t] [-l LABEL] -d DATASET
 
 		$SUMMARY:
 
 		  -t          Test the Clevis configuration without unlocking
 		  -d DATASET  The ZFS dataset to unlock
+		  -l LABEL    Use only this label to unlock (defaults to trying all labels)
 
 	USAGE_END
 }
@@ -22,12 +23,15 @@ main() {
 	fi
 
 	local dataset
-	local test_only='false'
-	while getopts ":d:t" o; do
+	local test_only=''
+	local label=''
+	while getopts "h:d:l:t" o; do
 		case "$o" in
-		d) dataset="$OPTARG" ;;
-		t) test_only='true' ;;
-		*) error "unrecognized argument: -${OPTARG}" ;;
+		h) usage; exit 0;;
+		d) dataset="$OPTARG";;
+		t) test_only=' (test)';;
+		l) label="$OPTARG";;
+		*) error "unrecognized argument: -${OPTARG}";;
 		esac
 	done
 
@@ -39,25 +43,40 @@ main() {
 		error "dataset is not bound with Clevis: ${dataset}"
 	fi
 
-	local clevis_data password
-
-	echo >&2 -n "loading clevis data from ${dataset}... "
-	clevis_data="$(zfs_get_clevis_data "${dataset}")"
-	password="$(clevis decrypt <<<"${clevis_data}")"
-	echo >&2 'ok'
-
-	if [[ "${test_only}" == 'true' ]]; then
-		echo >&2 -n "testing key for ${dataset}... "
-		if ! zfs_test_key "${dataset}" <<<"${password}"; then
-			error "testing key for ${dataset} failed"
+	if [[ -n "${label}" ]]; then
+		label="$(zfs_get_label "${dataset}" "${label}")"
+		testing -n "unlocking ${dataset} with ${label} ${test_only}... "
+		if unlock_with_label "${dataset}" "${label}" "${test_only}"; then
+			testing 'ok'
+			exit 0
+		else
+			testing 'failed'
+			exit 1
 		fi
 	else
-		echo >&2 -n "unlocking ${dataset}... "
-		if ! zfs_load_key "${dataset}" <<<"${password}"; then
-			error "could not load key for ${dataset}"
-		fi
+		local labels
+		labels="$(zfs_get_labels "${dataset}")"
+		for label in ${labels}; do
+			testing -n "unlocking ${dataset} with ${label} ${test_only}... "
+			if unlock_with_label "${dataset}" "${label}" "${test_only}"; then
+				testing 'ok'
+				[[ -z "${test_only}" ]] && exit 0 || true
+			else
+				testing "failed"
+				continue
+			fi
+		done
 	fi
-	echo >&2 'ok'
+
+	if [[ -n "${test_only}" ]]; then
+		exit 0
+	else
+		exit 1
+	fi
+}
+
+testing() {
+	[[ -n "${test_only}" ]] && echo >&2 "${@}" || true
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
