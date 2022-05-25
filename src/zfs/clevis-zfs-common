@@ -337,3 +337,9 @@ unlock_with_label() {
 	| (clevis decrypt || true) \
 	| zfs_load_key "${dataset}" "${test_only}"
 }
+
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+	. clevis-zfs-test
+	_test "$@"
+fi

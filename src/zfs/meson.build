@@ -17,3 +17,5 @@ foreach b : zfs_bins
     configuration: data
   )
 endforeach
+
+test('clevis-zfs-test', find_program(join_paths(meson.current_source_dir(), 'clevis-zfs-test')))
