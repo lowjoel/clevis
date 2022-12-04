@@ -1,3 +1,5 @@
+subdir('dracut')
+
 install_data(
   [join_paths(meson.current_source_dir(), 'clevis-zfs-common')],
   install_dir: libexecdir
