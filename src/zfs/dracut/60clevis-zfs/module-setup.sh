@@ -29,7 +29,7 @@ install() {
         /etc/services \
         grep sed cut \
         clevis-decrypt \
-        clevis-zfs-common \
+        @libexecdir@/clevis-zfs-common \
         clevis-zfs-unlock \
         clevis-zfs-list \
         clevis \
