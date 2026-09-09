@@ -3,7 +3,7 @@ set -euo pipefail
 
 SUMMARY="Unbinds a label from a ZFS dataset"
 
-function usage() {
+usage() {
 	cat >&2 <<-USAGE_END
 		Usage: clevis zfs unbind [-f] [-k KEY] -d DATASET [-a] -l LABEL
 
@@ -21,7 +21,7 @@ function usage() {
 }
 
 
-function main() {
+main() {
 	if [ $# -eq 1 ] && [ "${1:-}" == "--summary" ]; then
 		echo "$SUMMARY"
 		exit 0

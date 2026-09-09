@@ -3,7 +3,7 @@ set -euo pipefail
 
 SUMMARY="List ZFS datasets that are bound with Clevis [in dataset]"
 
-function usage() {
+usage() {
 	cat >&2 <<-USAGE_END
 		Usage: clevis zfs list -d DATASET
 

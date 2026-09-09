@@ -3,7 +3,7 @@ set -euo pipefail
 
 SUMMARY="Unlock a ZFS dataset using the saved Clevis data"
 
-function usage() {
+usage() {
 	cat >&2 <<-USAGE_END
 		Usage: clevis zfs unlock [-t] [-l LABEL] -d DATASET
 
@@ -16,7 +16,7 @@ function usage() {
 	USAGE_END
 }
 
-function main() {
+main() {
 	if [ $# -eq 1 ] && [ "${1:-}" == "--summary" ]; then
 		echo "$SUMMARY"
 		exit 0
@@ -76,7 +76,7 @@ function main() {
 }
 
 
-function testing() {
+testing() {
 	[[ -n "${test_only}" ]] && echo >&2 "${@}" || true
 }
 

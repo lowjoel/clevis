@@ -3,7 +3,7 @@ set -euo pipefail
 
 SUMMARY="Binds a ZFS dataset using the specified policy"
 
-function usage() {
+usage() {
 	cat >&2 <<-USAGE_END
 		Usage: clevis zfs bind [-f] [-k KEY] -d DATASET PIN CFG
 
@@ -20,7 +20,7 @@ function usage() {
 	USAGE_END
 }
 
-function findexe() {
+findexe() {
 	[ $# -eq 1 ] || return 1
 	while read -r -d: path; do
 		[ -f "$path/$1" ] && [ -x "$path/$1" ] && echo "$path/$1" && return 0
@@ -28,7 +28,7 @@ function findexe() {
 	return 1
 }
 
-function bind_zfs_dataset() {
+bind_zfs_dataset() {
 	local dataset="${1}"
 	local label="${2}"
 	local pin="${3}"
@@ -57,7 +57,7 @@ function bind_zfs_dataset() {
 	zfs_bind_clevis_label "${dataset}" "${label}" "${clevis_data}"
 }
 
-function main() {
+main() {
 	if [ $# -eq 1 ] && [ "${1:-}" == "--summary" ]; then
 		echo "$SUMMARY"
 		exit 0

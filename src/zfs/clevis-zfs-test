@@ -35,7 +35,7 @@ sss_config='{
 	}
 }'
 
-function zfs_usage() {
+zfs_usage() {
 	local permissions='create,destroy,mount,load-key,change-key,userprop,encryption,keyformat,keylocation'
 	cat >&2 <<-EOF
 
@@ -63,19 +63,19 @@ function zfs_usage() {
 exit_code=0
 testing_password="paaaassssswoooooorrrrddd"
 
-function testing() {
+testing() {
 	echo >&2 -en "${FUNCNAME[1]}: ${*}... "
 }
-function success() {
+success() {
 	echo >&2 'ok'
 }
-function failed() {
+failed() {
 	echo >&2 "failed!"
 	echo >&2 "${BASH_SOURCE[0]}:${BASH_LINENO[0]}  EXPECTED: '${expected}'  GOT: '${result}' ${*}"
 	declare -g exit_code=1
 }
 
-function _test() {
+_test() {
 	_test_is_valid_label
 	_test_read_passphrase
 	_test_zero_pad
@@ -85,7 +85,7 @@ function _test() {
 	exit "${exit_code}"
 }
 
-function _test_is_valid_label() {
+_test_is_valid_label() {
 	local expected
 	local result
 	valid_labels=(
@@ -137,7 +137,7 @@ function _test_is_valid_label() {
 	success
 }
 
-function _test_read_passphrase() {
+_test_read_passphrase() {
 	# test with reading from stdin
 	local expected
 	local result
@@ -159,7 +159,7 @@ function _test_read_passphrase() {
 	[[ "${expected}" == "${result}" ]] && success || failed
 }
 
-function _test_zero_pad() {
+_test_zero_pad() {
 	testing 'pad with 4 zeroes'
 	local expected='000051 '
 	local result
@@ -167,7 +167,7 @@ function _test_zero_pad() {
 	[[ "${expected}" == "${result}" ]] && success || failed
 }
 
-function _test_num_list() {
+_test_num_list() {
 	testing 'list with zero padding'
 	local expected='00 01 02 03 04 05 06 07 08 09 10 '
 	local result
@@ -175,14 +175,14 @@ function _test_num_list() {
 	[[ "${expected}" == "${result}" ]] && success || failed
 }
 
-function _zfs_test_teardown() {
+_zfs_test_teardown() {
 	testing "removing zfs testing dataset: ${test_dataset}"
 	! zfs list "${test_dataset}" &>${shutup} && success && return 0
 	zfs destroy -f -r "${test_dataset}"
 	success
 }
 
-function _zfs_create_encrypted_dataset() {
+_zfs_create_encrypted_dataset() {
 	local dataset="${1}"
 	testing "creating encrypted test dataset: ${dataset}"
 	# zfs create will work, assuming we have the permissions as described in
@@ -198,7 +198,7 @@ function _zfs_create_encrypted_dataset() {
 	fi
 }
 
-function _test_zfs_functions() {
+_test_zfs_functions() {
 	testing "checking if zfs testing dataset exists: ${root_dataset}"
 	zfs list "${root_dataset}" &>${shutup} && success || (zfs_usage; return 1)
 	trap _zfs_test_teardown EXIT
