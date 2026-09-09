@@ -95,9 +95,10 @@ is_valid_label() {
 }
 
 # get a list of all labels, including possible number suffixes
+# if no labels are defined, succeeds and returns the empty string
 zfs_get_labels() {
 	local dataset="${1}"
-	zfs_get_property "${dataset}" "${zfs_labels_prop}"
+	zfs_get_property "${dataset}" "${zfs_labels_prop}" || true
 }
 
 # get a single label from the list of all labels,
