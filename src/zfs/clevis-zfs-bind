@@ -10,6 +10,7 @@ function usage() {
 		$SUMMARY:
 
 		  -f          Do not prompt when overwriting configuration
+		  -y          Automatically answer yes for all questions
 		  -d DATASET  The ZFS dataset on which to perform binding
 		  -l LABEL    The label to use for this binding. Valid characters: letters, numbers and underscores
 
@@ -68,9 +69,10 @@ function main() {
 	local label
 	local key=''
 	local overwrite=''
-	while getopts ":hfd:l:k:" o; do
+	while getopts ":hyfd:l:k:" o; do
 		case "$o" in
 		h) usage; exit 0;;
+		y) ;;
 		f) overwrite='yes';;
 		d) dataset="$OPTARG";;
 		l) label="$OPTARG";;
