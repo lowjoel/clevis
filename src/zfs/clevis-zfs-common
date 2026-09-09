@@ -111,7 +111,7 @@ zfs_get_label() {
 
 # set the list of labels to the given value
 zfs_set_labels() {
-	local dataset="${1}";
+	local dataset="${1}"
 	local new_labels="${2}"
 	zfs_set_property "${dataset}" "${zfs_labels_prop}" "${new_labels}"
 }
@@ -132,8 +132,11 @@ zfs_remove_label() {
 	local old_label="${2}"
 	local labels
 	read -ra labels <<< "$(zfs_get_labels "${dataset}")"
-	local new_labels=( "${labels[@]/${old_label}}" )
-	if [[ "${#new_labels}" -eq 0 ]]; then
+	local new_labels=()
+	for l in "${labels[@]}"; do
+		[[ "${l}" == "${old_label}" ]] || new_labels+=( "${l}" )
+	done
+	if [[ "${#new_labels[@]}" -eq 0 ]]; then
 		zfs_remove_property "${dataset}" "${zfs_labels_prop}"
 	else
 		zfs_set_labels "${dataset}" "${new_labels[*]}"
