@@ -8,7 +8,7 @@
 . "$dracutlib"
 
 # load the kernel command line vars
-[ -z "$root" ] && root="$(getarg root=)"
+root="$(getarg root=)"
 # If root is not ZFS= or zfs: or rootfstype is not zfs then we are not supposed to handle it.
 [ "${root##zfs:}" = "${root}" ] && [ "${root##ZFS=}" = "${root}" ] && [ "$rootfstype" != "zfs" ] && exit 0
 
